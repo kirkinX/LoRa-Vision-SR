@@ -1,34 +1,34 @@
-# LoRa-Vision-SR: Transmisión Espectral de Imágenes y Súper-Resolución por Radiofrecuencia
+# LoRa-Vision-SR: Spectral Image Transmission & Super-Resolution over Radio Frequency
 
-**LoRa-Vision-SR** es un motor de compresión extrema y reconstrucción visual determinista diseñado para enlaces de comunicación críticos de ultra-bajo ancho de banda (radiofrecuencia **LoRa 433/915 MHz**, telemetría satelital y sistemas autónomos sin cobertura celular/Wi-Fi).
+**LoRa-Vision-SR** is an extreme compression and deterministic visual reconstruction engine designed for critical ultra-low bandwidth communication links (**LoRa 433/915 MHz** radio frequency, satellite telemetry, and autonomous systems operating without cellular or Wi-Fi coverage).
 
-![Comparativa Visual](comparativa_github_sr.jpg)
+![Visual Comparison](comparativa_github_sr.jpg)
 
-## Arquitectura Técnica
+## Technical Architecture
 
-El sistema resuelve el cuello de botella físico de las redes LPWAN (donde cada paquete útil transporta ~220 bytes) dividiendo la imagen en el espacio de color **YCbCr** antes de transmitir:
+The system overcomes the physical bandwidth bottleneck of LPWAN networks (where each payload packet carries ~220 bytes) by splitting the image into the **YCbCr** color space prior to transmission:
 
-1. **Modo Patrulla Rápida (Solo Luminancia `Y` - B/N):**
-   * Extrae únicamente el canal de intensidad lumínica (`128x128 px`), aplica realce de micro-contrastes (*Unsharp Mask*) y codifica en **WebP** (~1.8 - 2.2 KB, equivalente a **9–10 paquetes LoRa**).
-2. **Modo Reconocimiento Espectral (`Y + Cr + Cb` - Color Real):**
-   * Envía micro-paquetes adicionales de crominancia (`32x32 px`, ~400 bytes extra) que preservan los colores reales de la escena sin depender de colorización generativa.
-3. **Reconstrucción Determinista en Estación Base (`EDSR x4`):**
-   * La estación receptora decodifica los paquetes y escala la imagen a **`512x512 px`** mediante la red neuronal profunda **EDSR** (*Enhanced Deep Residual Networks*), recuperando bordes nítidos sin introducir alucinaciones visuales.
+1. **Fast Patrol Mode (Luminance `Y` Only - B/W):**
+   * Extracts only the light intensity channel (`128x128 px`), applies micro-contrast sharpening (*Unsharp Mask*), and encodes into **WebP** (~1.8 - 2.2 KB, equivalent to **9–10 LoRa packets**).
+2. **Spectral Reconnaissance Mode (`Y + Cr + Cb` - True Color):**
+   * Transmits additional chrominance micro-packets (`32x32 px`, ~400 extra bytes) that preserve the true colors of the scene without relying on generative AI colorization.
+3. **Deterministic Reconstruction at Base Station (`EDSR x4`):**
+   * The receiving base station decodes the incoming packets and upscales the image to **`512x512 px`** using the **EDSR** (*Enhanced Deep Residual Networks*) deep neural network, recovering sharp edges without introducing visual hallucinations.
 
-## Características Principales
-* **Cero Alucinaciones:** Emplea redes deterministas de súper-resolución (EDSR/FSRCNN) aptas para auditoría, seguridad perimetral y robótica.
-* **Transmisión Progresiva:** Permite visualizar primero la estructura en escala de grises y fusionar el color real bajo demanda.
-* **100% Libre de Regalías:** Construido exclusivamente sobre librerías y pesos bajo licencias permisivas (**Apache 2.0 / BSD-3-Clause**).
+## Key Features
+* **Zero Hallucinations:** Utilizes deterministic super-resolution networks (EDSR/FSRCNN) suitable for auditing, perimeter security, and robotics.
+* **Progressive Transmission:** Allows operators to inspect the grayscale structure first and fuse true color on demand.
+* **100% Royalty-Free:** Built exclusively on libraries and weights under permissive open-source licenses (**Apache 2.0 / BSD-3-Clause**).
 
-## Instalación y Uso Rápido
+## Installation & Quick Start
 
 ```bash
-# 1. Instalar dependencias
+# 1. Install dependencies
 pip install opencv-contrib-python numpy
 
-# 2. Descargar pesos del modelo determinista EDSR x4
-wget -O EDSR_x4.pb https://github.com/Saafke/EDSR_Tensorflow/raw/master/models/EDSR_x4.pb
+# 2. Download deterministic EDSR x4 model weights
+wget -O EDSR_x4.pb [https://github.com/Saafke/EDSR_Tensorflow/raw/master/models/EDSR_x4.pb](https://github.com/Saafke/EDSR_Tensorflow/raw/master/models/EDSR_x4.pb)
 
-# 3. Ejecutar prueba de compresión y reconstrucción
+# 3. Run compression and reconstruction benchmark
 python3 lora_vision_sr.py
 ```
